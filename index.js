@@ -51,6 +51,9 @@ app.use(session({
 
 app.use(passport.initialize())
 app.use(passport.session())
+let currectUser = 0;
+
+let savedToDo = []
 
 app.post("/api/user/register", isNotAuth, async (req , res ) => {
         const {username, password} = req.body;
@@ -117,18 +120,64 @@ app.get("/api/secret", checkAuth, (req, res) => {
 //     // }
 // }
 
+function isAuth(req, res, next) {
+    const token = req.headers["cookie"];
+    console.log(token)
+    if (token) next();
+    // const token_decode = jwt.verify(token, "AAABBBADA");
+    // let user = findUser(token_decode._username)
+    // if (user) return res.redirect("/")
+    else res.status(401)
+}
+
 function isNotAuth(req, res, next) {
     const token = req.headers["cookie"];
     console.log(token)
     if (token) return res.redirect("/")
-    // const token_decode = jwt.verify(token, "AAABBBADA");
-    // let user = findUser(token_decode._username)
-    // if (user) return res.redirect("/")
     next();
 }
 
 app.get("/", (req, res) => {
     res.send("redirected")
+})
+
+function findToDo(currectUser) {
+    for (let i= 0; i < savedToDo.length; i++) {
+        if (savedToDo[i].id == currectUser) {
+            return true
+        }
+    }
+    return false
+}
+
+app.post("/api/todos", isAuth, (req, res) => {
+    const {todo} = req.body;
+    console.log(todo)
+    console.log(currectUser)
+    if(savedToDo.length != 0 || findToDo(currectUser)) {
+        let ind = 0;
+        for (let i= 0; i < savedToDo.length; i++) {
+            if (savedToDo[i].id == currectUser) {
+                ind = i;
+                let ar = savedToDo[i].todos
+                ar.push(todo)
+                console.log(ar)
+                savedToDo[i] = {id: currectUser, todos: ar}
+            }
+        }
+        console.log(savedToDo)
+        res.send(savedToDo[ind])
+    } else {
+        let ar = []
+        ar.push(todo)
+        savedToDo.push({id: currectUser, todos: ar})
+        console.log(savedToDo)
+        res.send({id: currectUser, todos: ar})
+    }
+})
+
+app.get("/api/todos/list", (req, res) => {
+    res.send(savedToDo)
 })
 
 app.post("/api/user/login", isNotAuth, async (req, res) => {
@@ -141,6 +190,7 @@ app.post("/api/user/login", isNotAuth, async (req, res) => {
                     if(err) throw err
                     if(isMatch) {
                         console.log("here")
+                        currectUser = user?.id;
                         let jwtToken = {
                             id: user?.id,
                             username: user?.username
