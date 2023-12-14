@@ -148,8 +148,9 @@ app.post("/api/user/login", (req, res) => {
                             expiresIn: 120
                         },
                         (err, token) => {
-                            res.setHeader('set-cookie', [token])
-                            res.status(200).send()
+                            res.cookie('connect.sid', token)
+                            // res.setHeader('connect.sid', [token])
+                            res.status(200).send("ok")
                         }
                     );
                 } else {
