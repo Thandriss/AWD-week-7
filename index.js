@@ -8,6 +8,7 @@ const passport = require("passport")
 const initPass = require('./passport-config')
 const jwt = require('jsonwebtoken')
 const session = require('express-session')
+const checkAuth = require('./checkAuth.js')
 function getUserByName(username)  {
     for (let i=0; i< saved.length; i++) {
         if(saved[i].username === username) return saved[i]
@@ -96,22 +97,17 @@ app.get("/api/user/list", (req, res) =>{
 //     })
 // })
 
-app.get("/api/secret", (req, res) => {
-    if(req.isAuthenticated()) {
-        // console.log(session)
-        res.status(200).send("ok")
-    } else {
-        res.status(401)
-    }
+app.get("/api/secret", checkAuth, (req, res) => {
+    res.status(200).send()
 })
 
-function checkAuth(req, res, next) {
-    if(req.isAuthenticated()) {
-        res.status(200).send("ok")
-    } else {
-        res.status(401)
-    }
-}
+// function checkAuth(req, res, next) {
+//     if(req.isAuthenticated()) {
+//         res.status(200).send("ok")
+//     } else {
+//         res.status(401)
+//     }
+// }
 
 // app.post("/api/user/login", passport.authenticate('local', {
 //     successRedirect: "/api/secret"
