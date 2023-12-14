@@ -140,9 +140,6 @@ app.post("/api/user/login", (req, res) => {
                     jwt.sign(
                         jwtToken,
                         "AAABBBADA",
-                        {
-                            expiresIn: 120
-                        },
                         (err, token) => {
                             res.cookie('connect.sid', token)
                             // res.setHeader('connect.sid', [token])

@@ -5,6 +5,7 @@ module.exports = function(req, res, next) {
     let token;
     if(head) {
         token = head
+        console.log(token)
     } else {
         token = null
     }
