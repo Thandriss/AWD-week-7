@@ -100,19 +100,19 @@ app.get("/api/user/list", (req, res) =>{
 // })
 
 app.get("/api/secret", checkAuth, (req, res) => {
-
+    res.status(200)
 })
 
 function checkAuth(req, res, next) {
     if(req.isAuthenticated()) {
-        res.status(200).send("ok")
+        res.status(200).cookie('local').send("ok")
     } else {
         res.status(401)
     }
 }
 
-app.post("/api/user/login", passport.authenticate('local', {
-    successRedirect: "/api/secret"
+app.post("/api/user/login", checkAuth, passport.authenticate('local', {
+    successRedirect: "/api/secret", 
 }))
 // app.post("/api/user/login", (req, res) => {
 //     const {username, password} = req.body;
