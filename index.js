@@ -127,13 +127,13 @@ function isAuth(req, res, next) {
     // const token_decode = jwt.verify(token, "AAABBBADA");
     // let user = findUser(token_decode._username)
     // if (user) return res.redirect("/")
-    else res.status(401)
+    res.status(401).send()
 }
 
 function isNotAuth(req, res, next) {
-    const token = req.headers["cookie"];
+    // const token = req.headers["cookie"];
     console.log(token)
-    if (token) return res.redirect("/")
+    if (req.headers["cookie"]) return res.redirect("/")
     next();
 }
 
