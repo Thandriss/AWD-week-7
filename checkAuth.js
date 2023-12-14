@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 
 module.exports = function(req, res, next) {
-    const head = req.headers["auth"];
+    const head = req.headers["cookie"];
     let token;
     if(head) {
         token = head.split("=")[1]
