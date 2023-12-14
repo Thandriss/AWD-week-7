@@ -99,8 +99,13 @@ app.get("/api/user/list", (req, res) =>{
 //     })
 // })
 
-app.get("/api/secret", checkAuth, (req, res) => {
-    
+app.get("/api/secret", (req, res) => {
+    if(req.isAuthenticated()) {
+        // console.log(session)
+        res.status(200).send("ok")
+    } else {
+        res.status(401)
+    }
 })
 
 function checkAuth(req, res, next) {
@@ -113,7 +118,17 @@ function checkAuth(req, res, next) {
 
 app.post("/api/user/login", passport.authenticate('local', {
     successRedirect: "/api/secret"
-}))
+    }),
+    function (req, res){
+        if(req.isAuthenticated()) {
+            // console.log(session)
+            res.status(200).send("ok")
+        } else {
+            res.status(401)
+        }
+        const sessionCookie = req.session.cookie;
+        res.setHeader('set-cookie', [sessionCookie])
+    })
 // app.post("/api/user/login", (req, res) => {
 //     const {username, password} = req.body;
 //     if(checkUsername(username)) {
