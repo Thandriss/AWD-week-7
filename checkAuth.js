@@ -4,7 +4,7 @@ module.exports = function(req, res, next) {
     const head = req.headers["auth"];
     let token;
     if(head) {
-        token = head
+        token = head.split("=")[1]
         console.log(token)
     } else {
         token = null
