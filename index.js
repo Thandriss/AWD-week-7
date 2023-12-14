@@ -9,6 +9,8 @@ const initPass = require('./passport-config')
 const jwt = require('jsonwebtoken')
 const session = require('express-session')
 const checkAuth = require('./checkAuth.js')
+// const verify = promisify(jwt.verify);
+
 function getUserByName(username)  {
     for (let i=0; i< saved.length; i++) {
         if(saved[i].username === username) return saved[i]
@@ -50,27 +52,26 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.post("/api/user/register", async (req , res ) => {
-    const {username, password} = req.body;
-    console.log(req.body)
-    if (!checkUsername(username)) {
-        let new_pass 
-        await bcrypt
-        .genSalt(10)
-        .then(salt => {
-            console.log('Salt: ', salt)
-            bcrypt.hash(password, salt)
-            .then((result) => {
-                new_pass = result
-                let user = new User(Date.now().toString(), username, new_pass);
-                saved.push(user)
-                res.send(user)
+app.post("/api/user/register", isNotAuth, async (req , res ) => {
+        const {username, password} = req.body;
+        console.log(req.body)
+        if (!checkUsername(username)) {
+            let new_pass 
+            await bcrypt
+            .genSalt(10)
+            .then(salt => {
+                console.log('Salt: ', salt)
+                bcrypt.hash(password, salt)
+                .then((result) => {
+                    new_pass = result
+                    let user = new User(Date.now().toString(), username, new_pass);
+                    saved.push(user)
+                    res.send(user)
+                })
             })
-        })
-        .catch(err => console.error(err.message))
-    }
-    else res.status(400).send()
-    
+            .catch(err => console.error(err.message))
+        }
+        else res.status(400).send()
 })
 function checkUsername(username) {
     for (let i=0; i< saved.length; i++) {
@@ -101,57 +102,62 @@ app.get("/api/secret", checkAuth, (req, res) => {
     res.status(200).send()
 })
 
-// function checkAuth(req, res, next) {
-//     if(req.isAuthenticated()) {
-//         res.status(200).send("ok")
-//     } else {
-//         res.status(401)
+// function isNotAuth(req, res, next) {
+//     const token = req.cookie.jwt
+//     if(token) {
+//         jwt.verify(token, "AAABBBADA", 
+//         (err, answer) => {
+
+//         })
 //     }
+//     // if(req.isAuthenticated()) {
+//     //     return res.redirect("/")
+//     // } else {
+//     //     return next()
+//     // }
 // }
 
-// app.post("/api/user/login", passport.authenticate('local', {
-//     successRedirect: "/api/secret"
-//     }),
-//     function (req, res){
-//         if(req.isAuthenticated()) {
-//             // console.log(session)
-//             res.status(200).send("ok")
-//         } else {
-//             res.status(401)
-//         }
-//         const sessionCookie = req.session.cookie;
-//         res.setHeader('set-cookie', [sessionCookie])
-//     })
-app.post("/api/user/login", (req, res) => {
+function isNotAuth(req, res, next) {
+    const token = req.headers["cookie"];
+    console.log(token)
+    if (token) return res.redirect("/")
+    // const token_decode = jwt.verify(token, "AAABBBADA");
+    // let user = findUser(token_decode._username)
+    // if (user) return res.redirect("/")
+    next();
+}
+
+app.post("/api/user/login", isNotAuth, async (req, res) => {
     const {username, password} = req.body;
-    console.log("here")
-    if(checkUsername(username)) {
-        let user = findUser(username);
-        if(user != null) {
-            bcrypt.compare(password, user.password, (err, isMatch) => {
-                if(err) throw err
-                if(isMatch) {
-                    console.log("here")
-                    let jwtToken = {
-                        id: user?.id,
-                        username: user?.username
-                    }
-                    console.log(jwtToken)
-                    jwt.sign(
-                        jwtToken,
-                        "AAABBBADA",
-                        (err, token) => {
-                            res.cookie('connect.sid', token)
-                            // res.setHeader('connect.sid', [token])
-                            res.status(200).send("ok")
+        console.log("here")
+        if(checkUsername(username)) {
+            let user = findUser(username);
+            if(user != null) {
+                bcrypt.compare(password, user.password, (err, isMatch) => {
+                    if(err) throw err
+                    if(isMatch) {
+                        console.log("here")
+                        let jwtToken = {
+                            id: user?.id,
+                            username: user?.username
                         }
-                    );
-                } else {
-                    res.status(401).send()
-                }
-            })
-        }   
-    }
+                        console.log(jwtToken)
+                        jwt.sign(
+                            jwtToken,
+                            "AAABBBADA",
+                            (err, token) => {
+                                res.cookie('connect.sid', token)
+                                // res.setHeader('connect.sid', [token])
+                                passport.authenticate('local')
+                                res.status(200).send("ok")
+                            }
+                        );
+                    } else {
+                        res.status(401).send()
+                    }
+                })
+            }   
+        }
 })
 
 app.listen(port, () => {
