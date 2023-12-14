@@ -1,12 +1,12 @@
-import express, {Express, Request, Response} from "express"
-import { type } from "os";
-import bodyParser from 'body-parser'
-import bcrypt from 'bcryptjs'
+const express = require("express");
+// import { type } from "os";
+const bodyParser = require('body-parser')
+const bcrypt = require('bcryptjs')
 // import cookie_parser from 'cookie-parser'
-import cookieParser from "cookie-parser";
-import passport from "passport"
+// import cookieParser from "cookie-parser";
+const passport = require("passport")
 const initPass = require('./passport-config')
-const jwt = require('jsonwebtoken')
+// const jwt = require('jsonwebtoken')
 const session = require('express-session')
 function getUserByName(username)  {
     for (let i=0; i< saved.length; i++) {

@@ -8,12 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 const LocalStrategy = require('passport-local').Strategy;
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const bcrypt = require('bcryptjs');
 function init(passport, getUserByName, getUserById) {
     const authenticateUser = (username, password, done) => __awaiter(this, void 0, void 0, function* () {
         const user = getUserByName(username);
@@ -21,7 +17,7 @@ function init(passport, getUserByName, getUserById) {
             return done(null, false);
         }
         try {
-            if (yield bcryptjs_1.default.compare(password, user.password)) {
+            if (yield bcrypt.compare(password, user.password)) {
                 return done(null, user);
             }
             else {
