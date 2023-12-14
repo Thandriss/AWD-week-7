@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs')
 // import cookieParser from "cookie-parser";
 const passport = require("passport")
 const initPass = require('./passport-config')
-// const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 const session = require('express-session')
 function getUserByName(username)  {
     for (let i=0; i< saved.length; i++) {
@@ -66,9 +66,6 @@ app.post("/api/user/register", async (req , res ) => {
                 res.send(user)
             })
         })
-        .then(hash => {
-            console.log('Hash: ', hash)
-        })
         .catch(err => console.error(err.message))
     }
     else res.status(400).send()
@@ -116,49 +113,52 @@ function checkAuth(req, res, next) {
     }
 }
 
-app.post("/api/user/login", passport.authenticate('local', {
-    successRedirect: "/api/secret"
-    }),
-    function (req, res){
-        if(req.isAuthenticated()) {
-            // console.log(session)
-            res.status(200).send("ok")
-        } else {
-            res.status(401)
-        }
-        const sessionCookie = req.session.cookie;
-        res.setHeader('set-cookie', [sessionCookie])
-    })
-// app.post("/api/user/login", (req, res) => {
-//     const {username, password} = req.body;
-//     if(checkUsername(username)) {
-//         let user = findUser(username);
-//         if(user != null) {
-//             bcrypt.compare(password, user.password, (err, isMatch) => {
-//                 if(err) throw err
-//                 if(isMatch) {
-//                     let jwtToken = {
-//                         id: user?.id,
-//                         username: user?.username,
-//                         password: user?.password
-//                     }
-//                     jwt.sign(
-//                         jwtToken,
-//                         "gdshual",
-//                         {
-//                             expiresIn: 120
-//                         },
-//                         (err, token) => {
-//                             res.status(200).send("ok", token)
-//                         }
-//                     );
-//                 } else {
-//                     res.status(401).send()
-//                 }
-//             })
-//         }   
-//     }
-// })
+// app.post("/api/user/login", passport.authenticate('local', {
+//     successRedirect: "/api/secret"
+//     }),
+//     function (req, res){
+//         if(req.isAuthenticated()) {
+//             // console.log(session)
+//             res.status(200).send("ok")
+//         } else {
+//             res.status(401)
+//         }
+//         const sessionCookie = req.session.cookie;
+//         res.setHeader('set-cookie', [sessionCookie])
+//     })
+app.post("/api/user/login", (req, res) => {
+    const {username, password} = req.body;
+    console.log("here")
+    if(checkUsername(username)) {
+        let user = findUser(username);
+        if(user != null) {
+            bcrypt.compare(password, user.password, (err, isMatch) => {
+                if(err) throw err
+                if(isMatch) {
+                    console.log("here")
+                    let jwtToken = {
+                        id: user?.id,
+                        username: user?.username
+                    }
+                    console.log(jwtToken)
+                    jwt.sign(
+                        jwtToken,
+                        "AAABBBADA",
+                        {
+                            expiresIn: 120
+                        },
+                        (err, token) => {
+                            res.setHeader('set-cookie', [token])
+                            res.status(200).send()
+                        }
+                    );
+                } else {
+                    res.status(401).send()
+                }
+            })
+        }   
+    }
+})
 
 app.listen(port, () => {
     console.log("Server listen!")
