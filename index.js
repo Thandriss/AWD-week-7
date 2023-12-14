@@ -127,6 +127,10 @@ function isNotAuth(req, res, next) {
     next();
 }
 
+app.get("/", (req, res) => {
+    res.send("redirected")
+})
+
 app.post("/api/user/login", isNotAuth, async (req, res) => {
     const {username, password} = req.body;
         console.log("here")
