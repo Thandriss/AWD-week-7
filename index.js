@@ -125,6 +125,7 @@ app.get("/", (req, res) => {
 
 function findToDo(currectUser) {
     console.log("findToDo")
+    console.log(currectUser)
     for (let i= 0; i < savedToDo.length; i++) {
         if (savedToDo[i].id === currectUser) {
             console.log(savedToDo[i])
