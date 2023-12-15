@@ -105,34 +105,14 @@ app.get("/api/secret", checkAuth, (req, res) => {
     res.status(200).send()
 })
 
-// function isNotAuth(req, res, next) {
-//     const token = req.cookie.jwt
-//     if(token) {
-//         jwt.verify(token, "AAABBBADA", 
-//         (err, answer) => {
-
-//         })
-//     }
-//     // if(req.isAuthenticated()) {
-//     //     return res.redirect("/")
-//     // } else {
-//     //     return next()
-//     // }
-// }
-
 function isAuth(req, res, next) {
     const token = req.headers["cookie"];
     console.log(token)
     if (token) next();
-    // const token_decode = jwt.verify(token, "AAABBBADA");
-    // let user = findUser(token_decode._username)
-    // if (user) return res.redirect("/")
     res.status(401).send()
 }
 
 function isNotAuth(req, res, next) {
-    // const token = req.headers["cookie"];
-    console.log(token)
     if (req.headers["cookie"]) return res.redirect("/")
     next();
 }
