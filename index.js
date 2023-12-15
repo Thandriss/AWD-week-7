@@ -123,7 +123,7 @@ app.get("/", (req, res) => {
 
 function findToDo(currectUser) {
     for (let i= 0; i < savedToDo.length; i++) {
-        if (savedToDo[i].id == currectUser) {
+        if (savedToDo[i].id === currectUser) {
             return true
         }
     }
@@ -137,7 +137,7 @@ app.post("/api/todos", isAuth, (req, res) => {
     if(savedToDo.length != 0 || findToDo(currectUser)) {
         let ind = 0;
         for (let i= 0; i < savedToDo.length; i++) {
-            if (savedToDo[i].id == currectUser) {
+            if (savedToDo[i].id === currectUser) {
                 ind = i;
                 let ar = savedToDo[i].todos
                 ar.push(todo)
@@ -181,7 +181,6 @@ app.post("/api/user/login", isNotAuth, async (req, res) => {
                             "AAABBBADA",
                             (err, token) => {
                                 res.cookie('connect.sid', token)
-                                // res.setHeader('connect.sid', [token])
                                 passport.authenticate('local')
                                 res.status(200).send("ok")
                             }
