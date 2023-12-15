@@ -85,7 +85,9 @@ function checkUsername(username) {
 
 function findUser(username) {
     for (let i=0; i< saved.length; i++) {
-        if(saved[i].username === username) return saved[i]
+        if(saved[i].username === username) {
+            return saved[i] 
+        }
     }
     return null
 }
@@ -122,8 +124,12 @@ app.get("/", (req, res) => {
 })
 
 function findToDo(currectUser) {
+    console.log("findToDo")
     for (let i= 0; i < savedToDo.length; i++) {
         if (savedToDo[i].id === currectUser) {
+            console.log(savedToDo[i])
+            console.log(currectUser)
+            console.log("end")
             return true
         }
     }
@@ -133,6 +139,7 @@ function findToDo(currectUser) {
 app.post("/api/todos", isAuth, (req, res) => {
     const {todo} = req.body;
     console.log(todo)
+    console.log(" in todos")
     console.log(currectUser)
     if(findToDo(currectUser) || savedToDo.length != 0) {
         let ind = 0;
