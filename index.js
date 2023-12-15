@@ -127,8 +127,8 @@ function findToDo(currectUser) {
     console.log("findToDo")
     console.log(currectUser)
     for (let i= 0; i < savedToDo.length; i++) {
-        if (savedToDo[i].id === currectUser) {
-            console.log(savedToDo[i])
+        if (savedToDo[i].id == currectUser) {
+            console.log(savedToDo[i].id)
             console.log(currectUser)
             console.log("end")
             return true
@@ -145,7 +145,7 @@ app.post("/api/todos", isAuth, (req, res) => {
     if(findToDo(currectUser) || savedToDo.length != 0) {
         let ind = 0;
         for (let i= 0; i < savedToDo.length; i++) {
-            if (savedToDo[i].id === currectUser) {
+            if (savedToDo[i].id == currectUser) {
                 ind = i;
                 let ar = savedToDo[i].todos
                 ar.push(todo)
