@@ -134,7 +134,7 @@ app.post("/api/todos", isAuth, (req, res) => {
     const {todo} = req.body;
     console.log(todo)
     console.log(currectUser)
-    if(savedToDo.length != 0 || findToDo(currectUser)) {
+    if(findToDo(currectUser) || savedToDo.length != 0) {
         let ind = 0;
         for (let i= 0; i < savedToDo.length; i++) {
             if (savedToDo[i].id === currectUser) {
